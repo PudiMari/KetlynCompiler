@@ -1,0 +1,22 @@
+ketlyn::init
+    ktl::var inteiro;
+    ktl::var soma;
+
+    ktl::write ("Digite um numero");
+    ktl::read (inteiro);
+
+    soma = 2;
+    soma = inteiro/3;
+    ktl::write ("soma");
+
+    ktl::if (inteiro < 3)
+        ktl::write ("inteiro e menor que 3");
+    ktl::else
+        ktl::write ("inteiro e maior que 3");
+    ktl::endif
+
+    ktl::loop (inteiro < 10)
+        ktl::write ("ainda nao chegou no 10");
+        inteiro = inteiro + 1;
+    ktl::endloop
+ketlyn::close

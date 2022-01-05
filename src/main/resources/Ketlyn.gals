@@ -1,0 +1,125 @@
+#Options
+GenerateScanner = true
+GenerateParser = true
+Language = Java
+ScannerName = Lexico
+ParserName = Sintatico
+SemanticName = Semantico
+ScannerCaseSensitive = true
+ScannerTable = Full
+Input = Stream
+Parser = LL
+#RegularDefinitions
+whitespace : [\s\t\n]
+comment    : [\0-\41\43-\255]
+character  : [a-zA-Z]
+colon      : ["::"]
+integer    : [0-9]
+string     : [\0-\9\11-\33\35-\91\93-\255]
+#Tokens
+                        	: {whitespace}*
+                        	: / / [^\n]*
+id	              	: {character}({character} | {integer} )*
+keyword		      	: ({character} | {colon})*
+number         		: ({integer})+
+string_literal          	: \" ({string} | \\ \" | \\ {character})* \"
+
+init_program	= keyword : "ketlyn::init"
+close_program	= keyword : "ketlyn::close"
+
+if       	= keyword : "ktl::if"
+else     	= keyword : "ktl::else"
+endif		= keyword : "ktl::endif"
+
+loop     	= keyword : "ktl::loop"
+endloop  	= keyword : "ktl::endloop"
+
+write    	= keyword : "ktl::write"
+read    		= keyword : "ktl::read"
+var      	= keyword : "ktl::var"
+
+"("
+")"
+";" 
+"="
+"+"
+"-"
+"*"
+"/"
+"<"
+">"
+
+#NonTerminals
+<KETLYN>
+<RECURSIVE_STATEMENT>
+<STATEMENT>
+<WRITE>
+<READ>
+<CONDITIONAL>
+<IF>
+<ELSE>
+<LOOP>
+<WHILE>
+<DECLARATION>
+<ASSIGNMENT>
+<BASIC_EXPRESSION>
+<BASIC_OPERATOR>
+<STRING_EXPRESSION>
+<ANY_EXPRESSION>
+<LOGICAL_EXPRESSION>
+<ID_OR_NUMBER>
+<LOGICAL_OPERATOR>
+#Grammar
+<KETLYN>          ::= init_program <RECURSIVE_STATEMENT> close_program
+|                         î
+;
+<RECURSIVE_STATEMENT> ::= <STATEMENT> <RECURSIVE_STATEMENT>
+|                        î
+;
+<STATEMENT>           ::= <WRITE>
+|                         <READ>
+|                         <CONDITIONAL>
+|                         <LOOP>
+|                         <DECLARATION>
+|                         <ASSIGNMENT>
+;
+<WRITE>               ::= write "(" <ANY_EXPRESSION> ")" ";"
+;
+<READ>                ::= read "(" id ")" ";"
+;
+<CONDITIONAL>         ::= <IF> <ELSE> endif
+;
+<IF>                  ::= if "(" <LOGICAL_EXPRESSION> ")" <RECURSIVE_STATEMENT>
+;
+<ELSE>                ::= else <RECURSIVE_STATEMENT>
+|                         î
+;
+<LOOP>                ::= <WHILE> endloop
+;
+<WHILE>               ::= loop "(" <LOGICAL_EXPRESSION> ")" <RECURSIVE_STATEMENT>
+;
+<DECLARATION>         ::= var id ";"
+;
+<ASSIGNMENT>          ::= id "=" <BASIC_EXPRESSION> ";"
+;
+<BASIC_EXPRESSION>    ::= id <BASIC_OPERATOR>
+|                         number <BASIC_OPERATOR>
+|                         "+" <BASIC_EXPRESSION>
+|                         "-" <BASIC_EXPRESSION>
+|                         "(" <BASIC_EXPRESSION> ")" <BASIC_OPERATOR>
+;
+<BASIC_OPERATOR>      ::= "+" <BASIC_EXPRESSION>
+|                         "-" <BASIC_EXPRESSION>
+|                         "*" <BASIC_EXPRESSION>
+|                         "/" <BASIC_EXPRESSION>
+|                         î
+;
+<STRING_EXPRESSION>   ::= string_literal
+;
+<ID_OR_NUMBER>           ::= id | number;
+<ANY_EXPRESSION>        ::= <BASIC_EXPRESSION>
+|                         <STRING_EXPRESSION>
+;
+<LOGICAL_OPERATOR>       ::=  "<" | ">";
+<LOGICAL_EXPRESSION>   ::=  <ID_OR_NUMBER> <LOGICAL_OPERATOR> <ID_OR_NUMBER>;
+
